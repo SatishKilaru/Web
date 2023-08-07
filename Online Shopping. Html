@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+ 
+<html lang="en">
+ 
+<head>
+ 
+<meta charset="UTF-8">
+ 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+<title>Online Shopping - Product List and Cart</title>
+ 
+<style>
+ 
+   table {
+ 
+    width: 100%;
+ 
+    border-collapse: collapse;
+ 
+    margin-top: 20px;
+ 
+  }
+ 
+  th, td {
+ 
+    border: 1px solid #ddd;
+ 
+    padding: 8px;
+ 
+    text-align: left;
+ 
+  }
+ 
+  th {
+ 
+    cursor: pointer;
+ 
+  }
+ 
+  .pagination {
+ 
+    display: inline-block;
+ 
+    margin-top: 10px;
+ 
+  }
+ 
+  .pagination a {
+ 
+    color: black;
+ 
+    float: left;
+ 
+    padding: 8px 16px;
+ 
+    text-decoration: none;
+ 
+    border: 1px solid #ddd;
+ 
+  }
+ 
+  .pagination a.active {
+ 
+    background-color: #4CAF50;
+ 
+    color: white;
+ 
+    border: 1px solid #4CAF50;
+ 
+  }
+ 
+</style>
+ 
+</head>
+ 
+<body>
+ 
+<div id="cartPage" style="display: none;">
+ 
+  <h2>Cart</h2>
+ 
+  <button onclick="showProductPage()">Go to Product Page</button>
+ 
+  <ul id="cartList"></ul>
+ 
+</div>
+ 
+<div id="productPage">
+ 
+  <div>
+ 
+    <label for="filter">Filter by Product Name:</label>
+ 
+    <input type="text" id="filter">
+ 
+  </div>
+ 
+  <table id="table">
+ 
+    <thead>
+ 
+      <tr>
+ 
+        <th onclick="sortTable(0)">Product ID</th>
+ 
+        <th onclick="sortTable(1)">Product Name</th>
+ 
+        <th onclick="sortTable(2)">Price</th>
+ 
+        <th></th>
+ 
+      </tr>
+ 
+    </thead>
+ 
+    <tbody id="tableBody"></tbody>
+ 
+  </table>
+ 
+  <div class="pagination" id="pagination"></div>
+ 
+  <br><button onclick="showCartPage()">Go to Cart Page</button>
+ 
+</div>
+ 
+<script>
+ 
+  const products = [
+ 
+    { id: 1, name: "Smartphone", price: 599.99 },
+ 
+    { id: 2, name: "Laptop", price: 999.99 },
+ 
+    { id: 3, name: "Headphones", price: 129.99 },
+ 
+    // ... add more products
+ 
+  ];
+ 
+ 
+  const itemsPerPage = 2;
+ 
+  let currentPage = 1;
+ 
+  let currentSortColumn = null;
+ 
+  let currentFilter = "";
+ 
+  let cart = [];
+ 
+ 
+  function renderTable(pageData) {
+ 
+    const tableBody = document.getElementById("tableBody");
+ 
+    tableBody.innerHTML = "";
+ 
+ 
+    pageData.forEach(product => {
+ 
+      const row = document.createElement("tr");
+ 
+      row.innerHTML = `
+ 
+        <td>${product.id}</td>
+ 
+        <td>${product.name}</td>
+ 
+        <td>$${product.price.toFixed(2)}</td>
+ 
+        <td><button onclick="addToCart(${product.id})">Add to Cart</button></td>
+ 
+      `;
+ 
+      tableBody.appendChild(row);
+ 
+    });
+ 
+  }
+ 
+ 
+  function renderPagination(totalPages) {
+ 
+    const pagination = document.getElementById("pagination");
+ 
+    pagination.innerHTML = "";
+ 
+ 
+    for (let i = 1; i <= totalPages; i++) {
+ 
+      const link = document.createElement("a");
+ 
+      link.href = "#";
+ 
+      link.textContent = i;
+ 
+      if (i === currentPage) {
+ 
+        link.classList.add("active");
+ 
+      }
+ 
+      link.addEventListener("click", () => {
+ 
+        currentPage = i;
+ 
+        updateTable();
+ 
+      });
+ 
+      pagination.appendChild(link);
+ 
+    }
+ 
+  }
+ 
+ 
+  function updateTable() {
+ 
+    let filteredProducts = products.filter(product =>
+ 
+      product.name.toLowerCase().includes(currentFilter.toLowerCase())
+ 
+    );
+ 
+ 
+    if (currentSortColumn !== null) {
+ 
+      filteredProducts.sort((a, b) => {
+ 
+        const valA = a[Object.keys(a)[currentSortColumn]];
+ 
+        const valB = b[Object.keys(b)[currentSortColumn]];
+ 
+        return valA.localeCompare(valB);
+ 
+      });
+ 
+    }
+ 
+ 
+    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+ 
+    renderTable(filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
+ 
+    renderPagination(totalPages);
+ 
+  }
+ 
+ 
+  function sortTable(column) {
+ 
+    if (currentSortColumn === column) {
+ 
+      currentSortColumn = null;
+ 
+    } else {
+ 
+      currentSortColumn = column;
+ 
+    }
+ 
+    updateTable();
+ 
+  }
+ 
+ 
+  const filterInput = document.getElementById("filter");
+ 
+  filterInput.addEventListener("input", () => {
+ 
+    currentFilter = filterInput.value;
+ 
+    currentPage = 1;
+ 
+    updateTable();
+ 
+  });
+ 
+ 
+  function addToCart(productId) {
+ 
+    const product = products.find(item => item.id === productId);
+ 
+    if (product) {
+ 
+      cart.push(product);
+ 
+      renderCart();
+ 
+      alert(`Product "${product.name}" added to cart!\nPrice: $${product.price.toFixed(2)}`);
+ 
+    } else {
+ 
+      alert(`Product not found.`);
+ 
+    }
+ 
+  }
+ 
+ 
+  function showProductPage() {
+ 
+    document.getElementById("cartPage").style.display = "none";
+ 
+    document.getElementById("productPage").style.display = "block";
+ 
+    updateTable();
+ 
+  }
+ 
+ 
+  function showCartPage() {
+ 
+    document.getElementById("productPage").style.display = "none";
+ 
+    document.getElementById("cartPage").style.display = "block";
+ 
+    renderCart();
+ 
+  }
+ 
+ 
+  function renderCart() {
+ 
+    const cartList = document.getElementById("cartList");
+ 
+    cartList.innerHTML = "";
+ 
+ 
+    cart.forEach(product => {
+ 
+      const listItem = document.createElement("li");
+ 
+      listItem.textContent = `${product.name} - $${product.price.toFixed(2)}`;
+ 
+      cartList.appendChild(listItem);
+ 
+    });
+ 
+  }
+ 
+ 
+  updateTable();
+ 
+</script>
+ 
+</body>
+ 
+</html>
