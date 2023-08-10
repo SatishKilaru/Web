@@ -171,3 +171,69 @@
 </body>
 </html>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Form with Validations</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Registration Form</h2>
+        <form id="registrationForm">
+            <!-- Your form fields here -->
+            
+            <div class="form-group">
+                <button type="button" class="btn btn-primary" id="submitButton">Submit</button>
+            </div>
+        </form>
+        <div id="successMessage" class="mt-3 text-success d-none">Submitted successfully!</div>
+    </div>
+
+    <script>
+        const form = document.getElementById("registrationForm");
+        const passwordField = document.getElementById("password");
+        const confirmPasswordField = document.getElementById("confirmPassword");
+        const submitButton = document.getElementById("submitButton");
+        const successMessage = document.getElementById("successMessage");
+
+        form.addEventListener("blur", function(event) {
+            const input = event.target;
+            validateField(input);
+        }, true);
+
+        passwordField.addEventListener("input", function() {
+            validateConfirmPassword();
+        });
+
+        confirmPasswordField.addEventListener("input", function() {
+            validateConfirmPassword();
+        });
+
+        submitButton.addEventListener("click", function() {
+            if (form.checkValidity()) {
+                successMessage.classList.remove("d-none");
+            }
+        });
+
+        function validateField(input) {
+            if (input.checkValidity()) {
+                input.classList.remove("is-invalid");
+            } else {
+                input.classList.add("is-invalid");
+            }
+        }
+
+        function validateConfirmPassword() {
+            if (passwordField.value === confirmPasswordField.value) {
+                confirmPasswordField.setCustomValidity("");
+            } else {
+                confirmPasswordField.setCustomValidity("Passwords do not match.");
+            }
+            validateField(confirmPasswordField);
+        }
+    </script>
+</body>
+</html>
