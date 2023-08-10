@@ -82,3 +82,92 @@
     </script>
 </body>
 </html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Form with Validations</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Registration Form</h2>
+        <form id="registrationForm">
+            <div class="form-group">
+                <label for="name">Name*</label>
+                <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="aadhar">Aadhar*</label>
+                <input type="text" class="form-control" id="aadhar" pattern="[0-9]{12}" required>
+                <small class="form-text text-muted">Please enter a 12-digit Aadhar number.</small>
+            </div>
+            <div class="form-group">
+                <label for="mobile">Mobile*</label>
+                <input type="tel" class="form-control" id="mobile" pattern="[0-9]{10}" required>
+            </div>
+            <div class="form-group">
+                <label for="dob">DOB*</label>
+                <input type="date" class="form-control" id="dob" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email*</label>
+                <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="fbUrl">Facebook URL*</label>
+                <input type="url" class="form-control" id="fbUrl" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password*</label>
+                <input type="password" class="form-control" id="password" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$" required>
+                <small class="form-text text-muted">Password must contain at least 8 characters including one uppercase letter, one lowercase letter, and one digit.</small>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password*</label>
+                <input type="password" class="form-control" id="confirmPassword" required>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById("registrationForm");
+        const passwordField = document.getElementById("password");
+        const confirmPasswordField = document.getElementById("confirmPassword");
+
+        form.addEventListener("blur", function(event) {
+            const input = event.target;
+            validateField(input);
+        }, true);
+
+        passwordField.addEventListener("input", function() {
+            validateConfirmPassword();
+        });
+
+        confirmPasswordField.addEventListener("input", function() {
+            validateConfirmPassword();
+        });
+
+        function validateField(input) {
+            if (input.checkValidity()) {
+                input.classList.remove("is-invalid");
+            } else {
+                input.classList.add("is-invalid");
+            }
+        }
+
+        function validateConfirmPassword() {
+            if (passwordField.value === confirmPasswordField.value) {
+                confirmPasswordField.setCustomValidity("");
+            } else {
+                confirmPasswordField.setCustomValidity("Passwords do not match.");
+            }
+            validateField(confirmPasswordField);
+        }
+    </script>
+</body>
+</html>
+
