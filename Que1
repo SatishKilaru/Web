@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hotels.com Configuration</title>
+</head>
+<body>
+  <h1>Hotels.com Configuration</h1>
+
+  <script>
+    var xhr = new XMLHttpRequest();
+    var apiUrl = 'https://hotels4.p.rapidapi.com/v2/get-meta-data';
+    
+    xhr.open('GET', apiUrl, true);
+
+  
+    xhr.setRequestHeader('X-RapidAPI-Host', 'hotels4.p.rapidapi.com');
+    xhr.setRequestHeader('X-RapidAPI-Key', 'b5173a6b9emshd56da68f325a33cp1a30bajsnfa805b17af61');
+
+    xhr.onload = function() {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        var jsonData = JSON.parse(xhr.responseText);
+
+        
+        function createTable(elementData) {
+          var table = document.createElement('table');
+          table.border = "1";
+
+          var tbody = document.createElement('tbody');
+          var headerRow = document.createElement('tr');
+          var headerCell1 = document.createElement('th');
+          headerCell1.textContent = "Property";
+          var headerCell2 = document.createElement('th');
+          headerCell2.textContent = "Value";
+          headerRow.appendChild(headerCell1);
+          headerRow.appendChild(headerCell2);
+          tbody.appendChild(headerRow);
+
+          for (var property in elementData) {
+            if (elementData.hasOwnProperty(property)) {
+              var row = document.createElement('tr');
+              var propertyCell = document.createElement('td');
+              propertyCell.textContent = property;
+              var valueCell = document.createElement('td');
+              valueCell.textContent = JSON.stringify(elementData[property]);
+
+              row.appendChild(propertyCell);
+              row.appendChild(valueCell);
+
+              tbody.appendChild(row);
+            }
+          }
+
+          table.appendChild(tbody);
+          document.body.appendChild(table);
+        }
+
+     
+        for (var element in jsonData) {
+          if (jsonData.hasOwnProperty(element)) {
+            createTable(jsonData[element]);
+          }
+        }
+      } else {
+        console.error('Request failed with status:', xhr.status);
+      }
+    };
+
+    xhr.send();
+  </script>
+</body>
+</html>
