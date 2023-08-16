@@ -1,0 +1,48 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Employee</title>
+    </head>
+    <body>
+        <center>
+            <h1><u>Employee(CRUD)</u></h1>
+            <br />
+            <form action="employee.jsp" method="post">
+                <b>Emp No : </b><input type="text" name="empNo" /><br /><br />
+                <b>Name : </b><input type="text" name="name" /><br /><br />
+                <b>Job : </b><input type="text" name="job" /><br /><br />
+                <button type="submit" name="buttonAction" value="first">First</button>
+                <button type="submit" name="buttonAction" value="next">Next</button>
+                <!-- Add other buttons and actions here -->
+            </form>
+        </center>
+        <% String buttonAction = request.getParameter("buttonAction"); if (buttonAction != null) { switch (buttonAction) { case "first": // Implement first button functionality break; case "next": // Implement next button functionality break; // Add cases for other buttons and actions } } %>
+    </body>
+</html>
+
+<!--<html>
+	<head>
+		<title>Employee</title>
+	</head>
+	<body>
+		<form>
+		<center>
+			<h1><u>Employee(CRUD)</u></h1><br>
+			<b>Emp No : </b><input type=text></input><br><br>
+			<b>Name : </b><input type=text></input><br><br>
+			<b>Job : </b><input type=text></input><br><br>
+			<button type="button">First</button>
+			<button type="button">Next</button>
+			<button type="button">Prev</button>
+			<button type="button">Last</button><br><br>
+			<button type="button">Add</button>
+			<button type="button">Edit</button>
+			<button type="button">Del</button>
+			<button type="button">Save</button><br><br>
+			<button type="button">Clear</button>
+			<button type="button">Exit</button>
+		</center>
+		</form>
+	</body>
+</html>-->
