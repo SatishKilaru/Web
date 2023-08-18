@@ -1,0 +1,147 @@
+//First.java
+-------------------
+-------------------
+package MVC;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/First")
+public class First extends HttpServlet {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		RequestDispatcher rd = null;
+		jdbc mj = new jdbc();
+		ArrayList<Emp> res = mj.getEmp();
+		request.setAttribute("Elist", res);
+		rd = request.getRequestDispatcher("/myJSP.jsp");
+		rd.forward(request, response);
+	}
+}
+
+//Emp.java
+---------------------
+---------------------
+package MVC;
+
+public class Emp {
+	int empno;
+	String name, job;
+	double sal;
+	int dept;
+
+	public Emp(int empno, String name, String job, double sal, int dept) {
+		this.empno = empno;
+		this.name = name;
+		this.job = job;
+		this.sal = sal;
+		this.dept = dept;
+	}
+
+	public int getEmpno() {
+		return empno;
+	}
+
+	public void setEmpno(int empno) {
+		this.empno = empno;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getJob() {
+		return job;
+	}
+
+	public void setJob(String job) {
+		this.job = job;
+	}
+
+	public double getSal() {
+		return sal;
+	}
+
+	public void setSal(double sal) {
+		this.sal = sal;
+	}
+
+	public int getDept() {
+		return dept;
+	}
+
+	public void setDept(int dept) {
+		this.dept = dept;
+	}
+}
+
+
+//jdbc.java
+-----------------
+-----------------
+package MVC;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+public class jdbc {
+	public ArrayList<Emp> getEmp() {
+		ArrayList<Emp> res = null;
+		Connection cs = null;
+		Statement s = null;
+		ResultSet rs = null;
+
+		try {
+			Class.forName("org.postgresql.Driver");
+			cs = DriverManager.getConnection(
+					"jdbc:postgresql://192.168.110.48:5432/plf_training?user=plf_training_admin&password=pff123");
+			s = cs.createStatement();
+			rs = s.executeQuery("select empno,ename,job,sal,dept_no from Reshma_emp");
+			res = new ArrayList<Emp>();
+			while (rs.next()) {
+				res.add(new Emp(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getDouble(4), rs.getInt(5)));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+}
+
+//myJSP.jsp
+-----------------
+-----------------
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Employee List</title>
+</head>
+<body>
+    <h1>Employee List</h1>
+    <table border="1">
+        <tr>
+            <th>EmpNo</th>
+            <th>Name</th>
+            <th>Job</th>
+            <th>Salary</th>
+            <th>Department</th>
+        </tr>
+    </table>
+</body>
+</html>
