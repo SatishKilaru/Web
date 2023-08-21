@@ -333,3 +333,18 @@ public class Employee {
 	}
 
 }
+
+
+//table
+
+select * from ServEmp
+
+delete from ServEmp where eno='E101';
+INSERT INTO ServEmp (name, eno, sal, job, dept)
+VALUES ('John Doe', 'E101', '50000', 'Manager', 'Sales');
+
+INSERT INTO ServEmp (name, eno, sal, job, dept)
+VALUES ('Jane Smith', 'E102', '45000', 'Developer', 'IT');
+
+INSERT INTO ServEmp (name, eno, sal, job, dept)
+VALUES ('Michael Johnson', 'E103', '60000', 'Analyst', 'Finance');
