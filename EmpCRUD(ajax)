@@ -17,7 +17,10 @@
 
 		<button id="first" onclick="First()">First</button>
 		<button id="last" onclick="Last()">Last</button>
-		<button id="add" onclick="Add()">Add</button>
+		<button id="next" onclick="Next()">Next</button>
+		<button id="Prev" onclick="Prev()">Previous</button>
+		<button id="Add" onclick="Add()">Add</button>
+		<button id="Del" onclick="Del()">Delete</button>
 	</center>
 	<script>
 	 var pos=0;
@@ -36,7 +39,22 @@
 				}
 			}
 			x.send();
-			pos=0;
+		}
+	 function Prev(){
+		 	pos-=1;
+			var x=new XMLHttpRequest();
+			x.open('GET','Servlet?button=Prev&pos='+pos,'true');
+			x.onreadystatechange=function(){
+				if(x.readyState===4){
+					var data=JSON.parse(x.responseText);
+					document.getElementById("name").value=data.name;
+					document.getElementById("enum").value=data.eno;
+					document.getElementById("sal").value=data.sal;
+					document.getElementById("job").value=data.job;
+					document.getElementById("dept").value=data.dept;
+				}
+			}
+			x.send();
 		}
 		function First(){
 			var x=new XMLHttpRequest();
@@ -71,15 +89,26 @@
 		}
 		function Add(){
 			var x=new XMLHttpRequest();
-			x.open('GET','Servlet?button=Last','true');
+			var name=document.getElementById("name").value;
+			var eno=document.getElementById("enum").value;
+			var sal=document.getElementById("sal").value;
+			var job=document.getElementById("job").value;
+			var dept=document.getElementById("dept").value;
+			x.open('GET','Servlet?button=Add&name='+name+'&eno='+eno+'&sal='+sal+'&job='+job+'&dept='+dept,'true');
 			x.onreadystatechange=function(){
 				if(x.readyState===4){
 					var data=JSON.parse(x.responseText);
-					document.getElementById("name").value=null;
-					document.getElementById("enum").value=null;
-					document.getElementById("sal").value=null;
-					document.getElementById("job").value=null;
-					document.getElementById("dept").value=null;
+				}
+			}
+			x.send();
+		}
+		function Del(){
+			var x=new XMLHttpRequest();
+			var eno=document.getElementById("enum").value;
+			x.open('GET','Servlet?button=Del&eno='+eno+'&pos='+pos,'true');
+			x.onreadystatechange=function(){
+				if(x.readyState===4){
+					var data=JSON.parse(x.responseText);
 				}
 			}
 			x.send();
@@ -139,11 +168,35 @@ public class Servlet extends HttpServlet {
 			jo.put("job", e.getJob());
 			jo.put("dept", e.getDept());
 			response.getWriter().write(jo.toString());
-
+		} else if (u.equals("Prev")) {
+			int s = Integer.parseInt(request.getParameter("pos"));
+			Employee e = res.get(s);
+			JSONObject jo = new JSONObject();
+			jo.put("name", e.getName());
+			jo.put("eno", e.getEno());
+			jo.put("sal", e.getSal());
+			jo.put("job", e.getJob());
+			jo.put("dept", e.getDept());
+			response.getWriter().write(jo.toString());
+		} else if (u.equals("Add")) {
+			String s1, s2, s3, s4, s5;
+			s1 = request.getParameter("name");
+			s2 = request.getParameter("eno");
+			s3 = request.getParameter("sal");
+			s4 = request.getParameter("job");
+			s5 = request.getParameter("dept");
+			j.Add(s1, s2, s3, s4, s5);
+			res = j.getAllEmployees();
+		} else if (u.equals("Del")) {
+			int s = Integer.parseInt(request.getParameter("pos"));
+			Employee e = res.get(s);
+			res.remove(s);
+			j.Del(e);
 		}
 	}
 
 }
+
 
 //jdbc
 
@@ -151,6 +204,7 @@ package Crud;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -179,8 +233,46 @@ public class JDBC {
 		return res;
 	}
 
-	
+	public void Add(String s1, String s2, String s3, String s4, String s5) {
+		Connection c = null;
+		PreparedStatement s = null;
+		try {
+			Class.forName("org.postgresql.Driver");
+			c = DriverManager.getConnection(
+					"jdbc:postgresql://192.168.110.48:5432/plf_training?user=plf_training_admin&password=pff123");
+			s = c.prepareStatement("insert into ServEmp values(?,?,?,?,?)");
+			s.setString(1, s1);
+			s.setString(2, s2);
+			s.setString(3, s3);
+			s.setString(4, s4);
+			s.setString(5, s5);
+			s.execute();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void Del(Employee s1) {
+		Connection c = null;
+		PreparedStatement s = null;
+		try {
+			Class.forName("org.postgresql.Driver");
+			c = DriverManager.getConnection(
+					"jdbc:postgresql://192.168.110.48:5432/plf_training?user=plf_training_admin&password=pff123");
+			s = c.prepareStatement("delete from ServEmp where name=? and eno=? and sal=? and job=? and dept=?;");
+			s.setString(1, s1.getName());
+			s.setString(2, s1.getEno());
+			s.setString(3, s1.getSal());
+			s.setString(4, s1.getJob());
+			s.setString(5, s1.getDept());
+			s.execute();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 }
+
 
 //Employee
 
@@ -239,3 +331,4 @@ public class Employee {
 	}
 
 }
+
