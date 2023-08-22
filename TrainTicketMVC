@@ -1,0 +1,240 @@
+//Ticket.html
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+
+<body style="background-color: skyblue;">
+
+	<center>
+		<br>
+		<h1><u>TrainTicket Booking</u></h1>
+		<br> <label><b>From </b><select id="from">
+				<option>select</option>
+		</select></label> <label><b>To</b> <select id="to">
+				<option>select</option>
+		</select></label><button onclick="Search()">Search</button><br>
+		<br> <label><b>Trains</b> <select id="Trains">
+				<option>select</option>
+		</select></label><br><br>
+		<label><b>class</b> <select id="class">
+				<option>select</option>
+				<option>Ac</option>
+				<option>Sleeper</option>
+				<option>general</option>
+				<option>Top</option>
+		</select></label>
+		<label> <b> Date :</b> <input type=date></input></label><br>
+		<h4>Passenger Details : </h4>
+		<input type="text" id=no><br>
+		<input type="text" id=nam><br><input type="text" id=age><br><input type="text" id=gen><br><br>
+		<button onclick="add()">Add</button><br><br>
+		<table border=1 style='border-collapse:collapse'>
+			<tr>
+				<th>Sno</th>
+				<th>Name</th>
+				<th>Age</th>
+				<th>Gender</th>
+				<th></th>
+			</tr>
+			<tbody id="bd">
+				
+			</tbody>
+		</table><br>
+		
+		<button onclick="book()">Book</button>
+		<button onclick="clear()">Clear</button>
+	</center>
+	<script>
+	
+	
+		var mad = new XMLHttpRequest();
+		mad.open('GET', 'TicketServlet', true);
+		mad.onreadystatechange = function() {
+			if (mad.status === 200 && mad.readyState === 4) {
+				const data = JSON.parse(mad.responseText);
+				Process(data);
+			}
+		}
+		function Process(data) {
+			const from = document.getElementById('from');
+			data.forEach(function(item) {
+				const sel = document.createElement('option');
+				sel.textContent = item.from;
+				from.appendChild(sel);
+			})
+
+			const to = document.getElementById('to');
+			data.forEach(function(item) {
+				const sel = document.createElement('option');
+				sel.textContent = item.to;
+				to.appendChild(sel);
+			})
+		}
+		function Search(){
+			var from=document.getElementById("from").value;
+			var to=document.getElementById("to").value;
+			var mad = new XMLHttpRequest();
+			mad.open('GET', 'TrainServlet?from='+from+'&to='+to, true);
+			mad.onreadystatechange = function() {
+				if (mad.status === 200 && mad.readyState === 4) {
+					const data = JSON.parse(mad.responseText);
+					console.log(data);
+					train(data);
+				}
+			}
+			mad.send();
+		}
+		function train(data) {
+			const from = document.getElementById('Trains');
+			data.forEach(function(item) {
+				const sel = document.createElement('option');
+				sel.textContent = item.train;
+				from.appendChild(sel);
+			})
+		}
+		function add(){
+			var no
+			var nam=document.getElementById("nam").value;
+			var age=document.getElementById("age").value;
+			var gen=document.getElementById("gen").value;
+			var db=document.getElementById("bd");
+			var tr=document.createElement("tr");
+			var td1=document.createElement("td");
+			var td2=document.createElement("td");
+			var td3=document.createElement("td");
+			td1.textContent=nam;
+			td2.textContent=age;
+			td3.textContent=gen;
+			tr.appendChild(td1);
+			tr.appendChild(td2);
+			tr.appendChild(td3);
+			db.appendChild(tr);
+		}
+		mad.send();
+	</script>
+</body>
+
+</html>
+
+//TicketServlet.java
+
+package pak;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONArray;
+
+@WebServlet("/TicketServlet")
+public class TicketServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
+
+		StationDAL s = new StationDAL();
+		JSONArray j = s.getStations();
+		response.getWriter().write(j.toString());
+	}
+
+}
+
+//StationDAL.java
+
+package pak;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public class StationDAL {
+	public JSONArray getStations() {
+		JSONArray ja = new JSONArray();
+		try {
+			Class.forName("org.postgresql.Driver");
+			Connection c = DriverManager.getConnection(
+					"jdbc:postgresql://192.168.110.48:5432/plf_training?user=plf_training_admin&password=pff123");
+			Statement s = c.createStatement();
+			ResultSet rs = s.executeQuery("select trn_start,trn_end from MadhuStations");
+			while (rs.next()) {
+				JSONObject jo = new JSONObject();
+				jo.put("from", rs.getString(1));
+				jo.put("to", rs.getString(2));
+				ja.put(jo);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ja;
+	}
+
+	public JSONArray getTrains(String from, String to) {
+		JSONArray ja = new JSONArray();
+		try {
+			Class.forName("org.postgresql.Driver");
+			Connection c = DriverManager.getConnection(
+					"jdbc:postgresql://192.168.110.48:5432/plf_training?user=plf_training_admin&password=pff123");
+			PreparedStatement s = c
+					.prepareStatement("select trn_name from MadhuStations where trn_start=? and trn_end=?");
+			s.setString(1, from);
+			s.setString(2, to);
+			ResultSet rs = s.executeQuery();
+			while (rs.next()) {
+				JSONObject jo = new JSONObject();
+				jo.put("train", rs.getString(1));
+				ja.put(jo);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ja;
+	}
+}
+
+//TrainServlet.java
+
+package pak;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONArray;
+
+@WebServlet("/TrainServlet")
+public class TrainServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String from = request.getParameter("from");
+		String to = request.getParameter("to");
+		StationDAL s = new StationDAL();
+		JSONArray j = s.getTrains(from, to);
+		response.getWriter().write(j.toString());
+
+	}
+
+}
