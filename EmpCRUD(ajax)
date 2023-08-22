@@ -8,112 +8,230 @@
 </head>
 <body>
 	<center>
-		<label>Name :<input type="text" id="name"></label><br>
+		<br>
+		<h2>
+			<u>Employee CRUD(MVC)</u>
+		</h2>
+		<br> <label>Name :<input type="text" id="name"></label><br>
 		<br> <label>enum :<input type="text" id="enum"></label><br>
 		<br> <label>sal :<input type="text" id="sal"></label><br>
 		<br> <label>job :<input type="text" id="job"></label><br>
 		<br> <label>dept :<input type="text" id="dept"></label><br>
-		<br>
+		<br> <br>
 
 		<button id="first" onclick="First()">First</button>
 		<button id="last" onclick="Last()">Last</button>
 		<button id="next" onclick="Next()">Next</button>
 		<button id="Prev" onclick="Prev()">Previous</button>
+		<br> <br>
 		<button id="Add" onclick="Add()">Add</button>
 		<button id="Del" onclick="Del()">Delete</button>
+		<button id="edit" onclick="Edit()">Edit</button>
+		<button id="save" onclick="Save()">Save</button>
+		<br> <br>
+		<button id="clear" onclick="Clear()">Clear</button>
+		<button id="exit" onclick="Exit()">Exit</button>
+		<br> <br>
+		<div id="tnq"></div>
 	</center>
+
 	<script>
-	 var pos=0;
-	 function Next(){
-		 	pos+=1;
-			var x=new XMLHttpRequest();
-			x.open('GET','Servlet?button=Next&pos='+pos,'true');
-			x.onreadystatechange=function(){
-				if(x.readyState===4){
-					var data=JSON.parse(x.responseText);
-					document.getElementById("name").value=data.name;
-					document.getElementById("enum").value=data.eno;
-					document.getElementById("sal").value=data.sal;
-					document.getElementById("job").value=data.job;
-					document.getElementById("dept").value=data.dept;
+		var pos = 0;
+		var n;
+		function Next() {
+			pos += 1;
+			var x = new XMLHttpRequest();
+			x.open('GET', 'Servlet?button=Next&pos=' + pos, 'true');
+			x.onreadystatechange = function() {
+				if (x.readyState === 4) {
+					var data = JSON.parse(x.responseText);
+					document.getElementById("name").value = data.name;
+					document.getElementById("enum").value = data.eno;
+					document.getElementById("sal").value = data.sal;
+					document.getElementById("job").value = data.job;
+					document.getElementById("dept").value = data.dept;
+				}
+			}
+			x.send();
+			document.getElementById("name").readOnly = true;
+			document.getElementById("enum").readOnly = true;
+			document.getElementById("sal").readOnly = true;
+			document.getElementById("job").readOnly = true;
+			document.getElementById("dept").readOnly = true;
+			var buttons = document.getElementsByTagName("button");
+			for (var i = 0; i < buttons.length; i++) {
+				if (buttons[i].id === "clear" || buttons[i].id === "save"||buttons[i].id ==="Add") {
+					buttons[i].disabled = true;
+				} else {
+					buttons[i].disabled = false; // Enable other buttons
+				}
+			}
+		}
+		function Prev() {
+			pos -= 1;
+			console.log(pos);
+			var x = new XMLHttpRequest();
+			x.open('GET', 'Servlet?button=Prev&pos=' + pos, 'true');
+			x.onreadystatechange = function() {
+				if (x.readyState === 4) {
+					var data = JSON.parse(x.responseText);
+					document.getElementById("name").value = data.name;
+					document.getElementById("enum").value = data.eno;
+					document.getElementById("sal").value = data.sal;
+					document.getElementById("job").value = data.job;
+					document.getElementById("dept").value = data.dept;
+				}
+			}
+			x.send();
+			var buttons = document.getElementsByTagName("button");
+			for (var i = 0; i < buttons.length; i++) {
+				if (buttons[i].id === "save") {
+					buttons[i].disabled = true;
+				} else {
+					buttons[i].disabled = false; // Enable other buttons
+				}
+			}
+			document.getElementById("name").readOnly = true;
+			document.getElementById("enum").readOnly = true;
+			document.getElementById("sal").readOnly = true;
+			document.getElementById("job").readOnly = true;
+			document.getElementById("dept").readOnly = true;
+		}
+		function First() {
+			var x = new XMLHttpRequest();
+			x.open('GET', 'Servlet?button=First', 'true');
+			x.onreadystatechange = function() {
+				if (x.readyState === 4) {
+					var data = JSON.parse(x.responseText);
+					document.getElementById("name").value = data.name;
+					document.getElementById("enum").value = data.eno;
+					document.getElementById("sal").value = data.sal;
+					document.getElementById("job").value = data.job;
+					document.getElementById("dept").value = data.dept;
+				}
+			}
+			x.send();
+			pos = 0;
+			var buttons = document.getElementsByTagName("button");
+			for (var i = 0; i < buttons.length; i++) {
+				if (buttons[i].id === "save"
+						|| buttons[i].id === "Prev") {
+					buttons[i].disabled = true;
+				} else {
+					buttons[i].disabled = false; // Enable other buttons
+				}
+			}
+			document.getElementById("name").readOnly = true;
+			document.getElementById("enum").readOnly = true;
+			document.getElementById("sal").readOnly = true;
+			document.getElementById("job").readOnly = true;
+			document.getElementById("dept").readOnly = true;
+		}
+		function Last() {
+			var x = new XMLHttpRequest();
+			x.open('GET', 'Servlet?button=Last', 'true');
+			x.onreadystatechange = function() {
+				if (x.readyState === 4) {
+					var data = JSON.parse(x.responseText);
+					document.getElementById("name").value = data.name;
+					document.getElementById("enum").value = data.eno;
+					document.getElementById("sal").value = data.sal;
+					document.getElementById("job").value = data.job;
+					document.getElementById("dept").value = data.dept;
+					pos=data.len;
+					console.log(pos);
+				}
+			}
+			x.send();
+			var buttons = document.getElementsByTagName("button");
+			for (var i = 0; i < buttons.length; i++) {
+				if (buttons[i].id === "clear" || buttons[i].id === "save"
+						|| buttons[i].id === "next") {
+					buttons[i].disabled = true;
+				} else {
+					buttons[i].disabled = false; // Enable other buttons
+				}
+			}
+			document.getElementById("name").readOnly = true;
+			document.getElementById("enum").readOnly = true;
+			document.getElementById("sal").readOnly = true;
+			document.getElementById("job").readOnly = true;
+			document.getElementById("dept").readOnly = true;
+		}
+		function Add() {
+			var x = new XMLHttpRequest();
+			var name = document.getElementById("name").value;
+			var eno = document.getElementById("enum").value;
+			var sal = document.getElementById("sal").value;
+			var job = document.getElementById("job").value;
+			var dept = document.getElementById("dept").value;
+			x.open('GET', 'Servlet?button=Add&name=' + name + '&eno=' + eno
+					+ '&sal=' + sal + '&job=' + job + '&dept=' + dept, 'true');
+			x.onreadystatechange = function() {
+				if (x.readyState === 4) {
+					var data = JSON.parse(x.responseText);
 				}
 			}
 			x.send();
 		}
-	 function Prev(){
-		 	pos-=1;
-			var x=new XMLHttpRequest();
-			x.open('GET','Servlet?button=Prev&pos='+pos,'true');
-			x.onreadystatechange=function(){
-				if(x.readyState===4){
-					var data=JSON.parse(x.responseText);
-					document.getElementById("name").value=data.name;
-					document.getElementById("enum").value=data.eno;
-					document.getElementById("sal").value=data.sal;
-					document.getElementById("job").value=data.job;
-					document.getElementById("dept").value=data.dept;
+		function Del() {
+			var x = new XMLHttpRequest();
+			var eno = document.getElementById("enum").value;
+			x.open('GET', 'Servlet?button=Del&eno=' + eno + '&pos=' + pos,
+					'true');
+			x.onreadystatechange = function() {
+				if (x.readyState === 4) {
+					var data = JSON.parse(x.responseText);
 				}
 			}
 			x.send();
 		}
-		function First(){
-			var x=new XMLHttpRequest();
-			x.open('GET','Servlet?button=First','true');
-			x.onreadystatechange=function(){
-				if(x.readyState===4){
-					var data=JSON.parse(x.responseText);
-					document.getElementById("name").value=data.name;
-					document.getElementById("enum").value=data.eno;
-					document.getElementById("sal").value=data.sal;
-					document.getElementById("job").value=data.job;
-					document.getElementById("dept").value=data.dept;
-				}
-			}
-			x.send();
-			pos=0;
+		function Edit() {
+			n = document.getElementById("enum").value;
+			document.getElementById("name").readOnly = false;
+			document.getElementById("enum").readOnly = false;
+			document.getElementById("sal").readOnly = false;
+			document.getElementById("job").readOnly = false;
+			document.getElementById("dept").readOnly = false;
 		}
-		function Last(){
-			var x=new XMLHttpRequest();
-			x.open('GET','Servlet?button=Last','true');
-			x.onreadystatechange=function(){
-				if(x.readyState===4){
-					var data=JSON.parse(x.responseText);
-					document.getElementById("name").value=data.name;
-					document.getElementById("enum").value=data.eno;
-					document.getElementById("sal").value=data.sal;
-					document.getElementById("job").value=data.job;
-					document.getElementById("dept").value=data.dept;
+		function Save() {
+			var x = new XMLHttpRequest();
+			var name = document.getElementById("name").value;
+			var eno = document.getElementById("enum").value;
+			var sal = document.getElementById("sal").value;
+			var job = document.getElementById("job").value;
+			var dept = document.getElementById("dept").value;
+			x.open('GET', 'Servlet?button=Edit&name=' + name + '&eno=' + eno
+					+ '&sal=' + sal + '&job=' + job + '&dept=' + dept + '&num='
+					+ n, 'true');
+			x.onreadystatechange = function() {
+				if (x.readyState === 4) {
+					var data = JSON.parse(x.responseText);
 				}
 			}
 			x.send();
 		}
-		function Add(){
-			var x=new XMLHttpRequest();
-			var name=document.getElementById("name").value;
-			var eno=document.getElementById("enum").value;
-			var sal=document.getElementById("sal").value;
-			var job=document.getElementById("job").value;
-			var dept=document.getElementById("dept").value;
-			x.open('GET','Servlet?button=Add&name='+name+'&eno='+eno+'&sal='+sal+'&job='+job+'&dept='+dept,'true');
-			x.onreadystatechange=function(){
-				if(x.readyState===4){
-					var data=JSON.parse(x.responseText);
-				}
-			}
-			x.send();
+		function Clear() {
+			document.getElementById("name").value = '';
+			document.getElementById("enum").value = '';
+			document.getElementById("sal").value = '';
+			document.getElementById("job").value = '';
+			document.getElementById("dept").value = '';
+			document.getElementById("name").readOnly = true;
+			document.getElementById("enum").readOnly = true;
+			document.getElementById("sal").readOnly = true;
+			document.getElementById("job").readOnly = true;
+			document.getElementById("dept").readOnly = true;
 		}
-		function Del(){
-			var x=new XMLHttpRequest();
-			var eno=document.getElementById("enum").value;
-			x.open('GET','Servlet?button=Del&eno='+eno+'&pos='+pos,'true');
-			x.onreadystatechange=function(){
-				if(x.readyState===4){
-					var data=JSON.parse(x.responseText);
-				}
+		function Exit() {
+			Clear();
+			var msg = document.getElementById("tnq");
+			msg.textContent = "Thank you for visiting!";
+			var buttons = document.getElementsByTagName("button");
+			for (var i = 0; i < buttons.length; i++) {
+				buttons[i].disabled = true;
 			}
-			x.send();
 		}
-	
 	</script>
 </body>
 </html>
@@ -157,6 +275,7 @@ public class Servlet extends HttpServlet {
 			jo.put("sal", e.getSal());
 			jo.put("job", e.getJob());
 			jo.put("dept", e.getDept());
+			jo.put("len", res.size());
 			response.getWriter().write(jo.toString());
 		} else if (u.equals("Next")) {
 			int s = Integer.parseInt(request.getParameter("pos"));
@@ -197,10 +316,21 @@ public class Servlet extends HttpServlet {
 			}
 			res.remove(g);
 			j.Del(s);
+		} else if (u.equals("Edit")) {
+			String s1, s2, s3, s4, s5, n;
+			s1 = request.getParameter("name");
+			s2 = request.getParameter("eno");
+			s3 = request.getParameter("sal");
+			s4 = request.getParameter("job");
+			s5 = request.getParameter("dept");
+			n = request.getParameter("num");
+			j.Edit(s1, s2, s3, s4, s5, n);
+			res = j.getAllEmployees();
 		}
 	}
 
 }
+
 
 
 //jdbc
@@ -272,7 +402,28 @@ public class JDBC {
 		}
 	}
 
+	public void Edit(String s1, String s2, String s3, String s4, String s5, String n) {
+		Connection c = null;
+		PreparedStatement s = null;
+		try {
+			Class.forName("org.postgresql.Driver");
+			c = DriverManager.getConnection(
+					"jdbc:postgresql://192.168.110.48:5432/plf_training?user=plf_training_admin&password=pff123");
+			s = c.prepareStatement("UPDATE ServEmp SET name =?, eno = ?, sal = ?, job = ?, dept = ? WHERE eno = ?");
+			s.setString(1, s1);
+			s.setString(2, s2);
+			s.setString(3, s3);
+			s.setString(4, s4);
+			s.setString(5, s5);
+			s.setString(6, n);
+			s.execute();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 }
+
 
 
 
